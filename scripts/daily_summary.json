@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-09",
+  "work_state": "UNSETTLED",
+  "total_deep_work_s": 39,
+  "total_distraction_s": 192,
+  "total_telemetry_s": 356,
+  "fragmentation_score": 8.3,
+  "peak_focus_window": "18:54 - 18:55",
+  "context_switches": 29,
+  "distraction_triggers": [
+    "YouTube recommendation rabbit hole ('I DREAM BIG BUT DO NOTHING')",
+    "YouTube switch-case & wellness video browsing",
+    "Spotify web search and audio playback toggling"
+  ],
+  "daily_narrative": "Fragmented laptop session from 18:52:14 to 18:58:12 (356s total capture, 30 transitions). The user struggled to maintain focused flow: while engaging briefly with ChatGPT and VS Code setup (TS Assignment / Full_Stack_Dev), the session was overtaken by 192s of distraction dwell on YouTube wellness and motivational rabbit holes ('I DREAM BIG BUT DO NOTHING'). Zero keystrokes were recorded in code. Primary work state: UNSETTLED.",
+  "unfinished_work": [
+    "TS Assignment - implementation and generic constraints",
+    "index.html in Full_Stack_Dev_Learning_Monster2.0",
+    "ChatGPT coding review notes"
+  ]
+}

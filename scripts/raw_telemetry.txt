@@ -1,0 +1,60 @@
+[ACTIVE NOW | Utility] PowerShell --> Windows PowerShell
+[18:52:14 | 5s] [Utility] PowerShell --> Windows PowerShell
+[ACTIVE NOW | Learning] Chrome --> ChronoTrace — Passive Activity Reconstruction Agent
+[18:52:16 | 2s] [Learning] Chrome --> ChronoTrace — Passive Activity Reconstruction Agent
+[ACTIVE NOW | Utility] Chrome --> New Tab
+[18:52:17 | 1s] [Utility] Chrome --> New Tab
+[ACTIVE NOW | Learning] Chrome --> ChatGPT
+[18:52:37 | 20s] [Learning] Chrome --> ChatGPT
+[ACTIVE NOW | Utility] Chrome --> New Tab
+[18:52:39 | 2s] [Utility] Chrome --> New Tab
+[ACTIVE NOW | Entertainment] Chrome --> YouTube
+[18:52:43 | 4s] [Entertainment] Chrome --> YouTube
+[ACTIVE NOW | Entertainment] Chrome --> (4) YouTube
+[18:52:47 | 4s] [Entertainment] Chrome --> (4) YouTube
+[ACTIVE NOW | Entertainment] Chrome --> Switch Case - YouTube
+[18:53:06 | 19s] [Entertainment] Chrome --> Switch Case - YouTube
+[ACTIVE NOW | Entertainment] Chrome --> Anxiety, Stress, Loneliness & Depression Cured - YouTube
+[18:54:07 | 1m 1s] [Entertainment] Chrome --> Anxiety, Stress, Loneliness & Depression Cured - YouTube
+[ACTIVE NOW | Learning] Chrome --> ChatGPT
+[18:54:08 | 1s] [Learning] Chrome --> ChatGPT
+[ACTIVE NOW | Utility] File Explorer --> This PC
+[18:54:18 | 9s] [Utility] File Explorer --> This PC
+[ACTIVE NOW | Utility] SearchHost --> Search
+[18:54:24 | 4s] [Utility] SearchHost --> Search
+[ACTIVE NOW | Deep Work] VS Code --> Visual Studio Code
+[18:54:32 | 4s] [Deep Work] VS Code --> Visual Studio Code
+[ACTIVE NOW | Deep Work] VS Code --> index.html - Full_Stack_Dev_Learning_Monster2.0
+[18:54:41 | 9s] [Deep Work] VS Code --> index.html - Full_Stack_Dev_Learning_Monster2.0
+[ACTIVE NOW | Deep Work] VS Code --> Release Notes 1.140.0
+[18:54:51 | 10s] [Deep Work] VS Code --> Release Notes 1.140.0
+[ACTIVE NOW | Deep Work] VS Code --> Open Folder
+[18:55:08 | 17s] [Deep Work] VS Code --> Open Folder
+[ACTIVE NOW | Deep Work] VS Code --> Visual Studio Code
+[18:55:10 | 2s] [Deep Work] VS Code --> Visual Studio Code
+[ACTIVE NOW | Deep Work] VS Code --> TS Assignment
+[18:55:15 | 5s] [Deep Work] VS Code --> TS Assignment
+[ACTIVE NOW | Deep Work] VS Code --> Welcome - TS Assignment
+[18:55:16 | 1s] [Deep Work] VS Code --> Welcome - TS Assignment
+[ACTIVE NOW | Learning] Chrome --> ChatGPT
+[18:55:18 | 2s] [Learning] Chrome --> ChatGPT
+[ACTIVE NOW | Utility] Chrome --> New Tab
+[18:55:22 | 4s] [Utility] Chrome --> New Tab
+[ACTIVE NOW | Utility] Chrome --> spotify web player - Google Search
+[18:55:24 | 2s] [Utility] Chrome --> spotify web player - Google Search
+[ACTIVE NOW | Utility] Chrome --> Spotify Web Player
+[18:55:27 | 3s] [Utility] Chrome --> Spotify Web Player
+[ACTIVE NOW | Utility] Chrome --> Spotify - Music for everyone
+[18:55:32 | 5s] [Utility] Chrome --> Spotify - Music for everyone
+[ACTIVE NOW | Learning] Chrome --> Yeh Jawaani Hai Deewani - Spotify
+[18:55:45 | 13s] [Learning] Chrome --> Yeh Jawaani Hai Deewani - Spotify
+[ACTIVE NOW | Learning] Chrome --> ChatGPT
+[18:55:46 | 1s] [Learning] Chrome --> ChatGPT
+[ACTIVE NOW | Utility] Chrome --> New Tab
+[18:55:47 | 1s] [Utility] Chrome --> New Tab
+[ACTIVE NOW | Entertainment] Chrome --> YouTube
+[18:55:52 | 5s] [Entertainment] Chrome --> YouTube
+[ACTIVE NOW | Entertainment] Chrome --> (4) YouTube
+[18:56:01 | 9s] [Entertainment] Chrome --> (4) YouTube
+[ACTIVE NOW | Learning] Chrome --> I DREAM BIG BUT DO NOTHING - YouTube
+[18:58:12 | 2m 11s] [Learning] Chrome --> I DREAM BIG BUT DO NOTHING - YouTube

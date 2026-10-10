@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TimeTrace — Analytics Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface2: #f1f5f9;
+  --surface3: #e2e8f0;
+  --border: #e2e8f0;
+  --border2: #cbd5e1;
+  --text: #0f172a;
+  --text2: #334155;
+  --text3: #64748b;
+  --accent: #2563eb;
+  --accent2: #1d4ed8;
+  --green: #16a34a;
+  --amber: #d97706;
+  --red: #dc2626;
+  --purple: #7c3aed;
+  --cyan: #0891b2;
+  --pink: #db2777;
+  --r: 10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;font-size:13px;min-height:100vh}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.nav-logo{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.logo-pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;box-shadow:0 0 0 0 rgba(37,99,235,.4)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}70%{box-shadow:0 0 0 6px rgba(37,99,235,0)}100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}}
+.nav-tabs{display:flex;gap:2px}
+.nav-tab{padding:6px 14px;border-radius:6px;font-size:12px;color:var(--text2);cursor:pointer;border:none;background:none;transition:all .12s}
+.nav-tab:hover{color:var(--text);background:var(--surface2)}
+.nav-tab.active{color:var(--accent);background:rgba(37,99,235,.1);font-weight:600}
+.nav-right{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all .12s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{color:var(--text);background:var(--surface3)}
+
+/* LAYOUT */
+.page{display:none;padding:24px;max-width:1400px;margin:0 auto}
+.page.active{display:block}
+
+/* GRID */
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.grid-21{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:20px}
+.grid-12{display:grid;grid-template-columns:1fr 2fr;gap:14px;margin-bottom:20px}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.card-title{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-header-title{font-size:13px;font-weight:600;color:var(--text)}
+
+/* STAT CARDS */
+.stat-val{font-size:28px;font-weight:600;color:var(--text);line-height:1.1;margin-bottom:4px}
+.stat-label{font-size:11px;color:var(--text3);margin-bottom:6px}
+.stat-sub{font-size:11px;display:flex;align-items:center;gap:4px}
+.stat-up{color:var(--green)}
+.stat-down{color:var(--red)}
+.stat-neu{color:var(--text3)}
+
+/* TAGS */
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.tag-green{background:rgba(52,209,122,.12);color:var(--green)}
+.tag-red{background:rgba(245,92,92,.12);color:var(--red)}
+.tag-amber{background:rgba(245,166,35,.12);color:var(--amber)}
+.tag-blue{background:rgba(91,127,255,.12);color:var(--accent)}
+.tag-purple{background:rgba(157,125,245,.12);color:var(--purple)}
+.tag-cyan{background:rgba(30,200,224,.12);color:var(--cyan)}
+.tag-gray{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+
+/* CHART containers */
+.chart-wrap{position:relative;width:100%}
+.chart-wrap canvas{width:100%!important}
+
+/* TIMELINE BAR */
+.timeline-bar{display:flex;height:36px;border-radius:6px;overflow:hidden;gap:2px;margin:12px 0}
+.tl-seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:rgba(255,255,255,.7);min-width:4px;border-radius:3px;cursor:pointer;transition:opacity .12s;position:relative}
+.tl-seg:hover{opacity:.8}
+.tl-seg.deep{background:#5b7fff}
+.tl-seg.learning{background:#34d17a}
+.tl-seg.distraction{background:#f55c5c}
+.tl-seg.ambient{background:#9d7df5}
+.tl-seg.restless{background:#f5a623}
+.tl-seg.break{background:#1ec8e0}
+.tl-seg.admin{background:#4a5068}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* FOCUS HEATMAP */
+.heatmap{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;margin:10px 0}
+.heat-cell{height:32px;border-radius:3px;cursor:pointer;transition:opacity .12s;position:relative}
+.heat-cell:hover{opacity:.8}
+
+/* EVENT LIST */
+.event-list{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto}
+.event-list::-webkit-scrollbar{width:4px}
+.event-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.event-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)}
+.event-time{font-size:11px;color:var(--text3);font-family:monospace;min-width:50px}
+.event-app{font-size:12px;font-weight:500;color:var(--text);min-width:70px}
+.event-title{font-size:12px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.event-dwell{font-size:11px;color:var(--text3);min-width:30px;text-align:right}
+.stream-badge{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600}
+.stream-main{background:rgba(91,127,255,.2);color:var(--accent)}
+.stream-micro{background:rgba(74,80,104,.3);color:var(--text3)}
+
+/* DISTRACTION TIMELINE */
+.dtl-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
+.dtl-row:last-child{border-bottom:none}
+.dtl-bar-wrap{flex:1;height:8px;background:var(--surface3);border-radius:4px;overflow:hidden}
+.dtl-bar{height:100%;border-radius:4px}
+.dtl-label{font-size:11px;color:var(--text2);min-width:140px}
+.dtl-val{font-size:11px;color:var(--text3);min-width:30px;text-align:right}
+
+/* CHUNK CARDS */
+.chunk-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+.chunk-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.chunk-label{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;background:rgba(91,127,255,.15);color:var(--accent)}
+.chunk-title{font-size:13px;font-weight:500;color:var(--text);flex:1}
+.chunk-meta{font-size:11px;color:var(--text3);margin-bottom:6px}
+.chunk-summary{font-size:12px;color:var(--text2);line-height:1.6;border-left:2px solid var(--border2);padding-left:10px;margin:6px 0}
+.chunk-signals{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+
+/* SCORE RING */
+.score-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
+.score-ring{position:relative;width:90px;height:90px}
+.score-ring svg{transform:rotate(-90deg)}
+.score-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22px;font-weight:600;color:var(--text)}
+.score-lbl{font-size:11px;color:var(--text3);text-align:center}
+
+/* WEEK GRID */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.day-cell{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.day-name{font-size:10px;color:var(--text3);margin-bottom:6px;text-transform:uppercase}
+.day-focus{font-size:16px;font-weight:600;margin-bottom:2px}
+.day-frag{font-size:10px;color:var(--text3)}
+.day-bar{height:4px;border-radius:2px;margin-top:6px}
+
+/* PATTERN ROW */
+.pattern-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.pattern-row:last-child{border-bottom:none}
+.pattern-icon{font-size:18px;width:32px;text-align:center}
+.pattern-body{flex:1}
+.pattern-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.pattern-desc{font-size:11px;color:var(--text2)}
+.pattern-badge{font-size:11px;font-weight:600}
+
+/* TOOLTIP */
+.tooltip{position:fixed;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:6px 10px;font-size:11px;color:var(--text);box-shadow:0 4px 12px rgba(0,0,0,0.08);pointer-events:none;z-index:999;display:none}
+
+/* SEARCH */
+.search-bar{display:flex;gap:8px;margin-bottom:16px}
+.search-input{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;color:var(--text);font-size:13px;outline:none}
+.search-input:focus{border-color:var(--accent)}
+.search-input::placeholder{color:var(--text3)}
+
+/* PROGRESS */
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.prog-label{font-size:12px;color:var(--text2);min-width:90px}
+.prog-bar-wrap{flex:1;height:6px;background:var(--surface3);border-radius:3px;overflow:hidden}
+.prog-bar{height:100%;border-radius:3px}
+.prog-val{font-size:11px;color:var(--text3);min-width:35px;text-align:right}
+
+/* REENTRY */
+.reentry-card{background:linear-gradient(135deg,rgba(37,99,235,.07),rgba(124,58,237,.04));border:1px solid rgba(37,99,235,.2);border-radius:var(--r);padding:20px}
+.reentry-quote{font-size:14px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:12px}
+.open-loop{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:6px}
+.loop-icon{width:16px;height:16px;border:2px solid var(--green);border-radius:3px;flex-shrink:0}
+
+/* ANOMALY */
+.anomaly-item{display:flex;gap:10px;padding:10px;background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.16);border-radius:8px;margin-bottom:8px}
+.anomaly-icon{font-size:16px;flex-shrink:0}
+.anomaly-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.anomaly-desc{font-size:11px;color:var(--text2)}
+
+/* Live dot */
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;display:inline-block;margin-right:4px}
+
+/* Divider */
+hr{border:none;border-top:1px solid var(--border);margin:16px 0}
+</style>
+</head>
+<body>
+
+<div class="tooltip" id="tooltip"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><div class="logo-pulse"></div>ChronoTrace</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
+    <button class="nav-tab" onclick="showPage('chunks')">Work Chunks</button>
+    <button class="nav-tab" onclick="showPage('telemetry')">Telemetry</button>
+    <button class="nav-tab" onclick="showPage('reentry')">Re-entry</button>
+    <button class="nav-tab" onclick="showPage('patterns')">Patterns</button>
+    <button class="nav-tab" onclick="showPage('pipeline')">Pipeline</button>
+  </div>
+  <div class="nav-right">
+    <span style="font-size:11px;color:var(--text3)"><span class="live-dot"></span>Live · 2026-10-09</span>
+    <button class="btn btn-primary">▶ Replay</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PAGE: DASHBOARD -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page active" id="page-dashboard">
+
+  <!-- STAT ROW -->
+  <div class="grid-4" style="margin-top:20px">
+    <div class="card">
+      <div class="stat-label">Sustained Deep Work</div>
+      <div class="stat-val" style="color:var(--accent)">39s</div>
+      <div class="stat-sub stat-neu">— 39s coding & research · Real laptop dwell</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Distraction Time</div>
+      <div class="stat-val" style="color:var(--red)">3m 12s</div>
+      <div class="stat-sub stat-down">↓ 192s video dwell & motivation rabbit hole</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Context Switches</div>
+      <div class="stat-val" style="color:var(--amber)">29</div>
+      <div class="stat-sub stat-neu">— Active telemetry stream · 356s total capture</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Work State</div>
+      <div class="stat-val" style="color:var(--amber)" id="stat-work-state">UNSETTLED</div>
+      <div class="stat-sub stat-down" id="stat-work-state-sub">↓ Distraction (3m 12s) > Deep Work (39s) · High fragmentation</div>
+    </div>
+  </div>
+
+  <!-- TIMELINE + DONUT -->
+  <div class="grid-21">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title">Today's Activity Timeline</div>
+        <span class="tag tag-gray">18:52 → 18:58</span>
+      </div>
+      <div class="timeline-bar" id="mainTimeline"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#5b7fff"></div>Deep Work</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#34d17a"></div>Learning</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f55c5c"></div>Distraction</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#9d7df5"></div>Ambient</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f5a623"></div>Restless</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1ec8e0"></div>Break</div>
+      </div>
+      <hr>
+      <div class="card-header-title" style="margin-bottom:10px">Hourly Focus Heatmap (This Week)</div>
+      <div style="display:flex;gap:4px;align-items:center;margin-bottom:6px">
+        <div style="font-size:10px;color:var(--text3);width:28px"></div>
+        <div style="display:grid;grid-template-columns:repeat(24,1fr);gap:3px;flex:1">
+          <div id="heatmapHours"></div>
+        </div>
+      </div>
+      <div id="heatmapGrid" class="heatmap"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px">
+        <span style="font-size:10px;color:var(--text3)">12 AM</span>
+        <span style="font-size:10px;color:var(--text3)">6 AM</span>
+        <span style="font-size:10px;color:var(--text3)">12 PM</span>
+        <span style="font-size:10px;color:var(--text3)">6 PM</span>
+        <span style="font-size:10px;color:var(--text3)">11 PM</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Session Intent Breakdown</div>
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="intentDonut"></canvas>
+      </div>
+      <hr>
+      <div class="card-title">Micro-Behavior Patterns</div>
+      <div class="prog-row"><div class="prog-label">Rapid Switches</div><div class="prog-bar-wrap"><div class="prog-bar" style="width:85%;background:var(--red)"></div></div><div class="prog-val" style="color:var(--red)">23</div></div>
+      <div class="prog-row"><div class="prog-label">Tab Flickers</div><div class="prog-bar-wrap"><div class="prog-bar" style="width:60%;background:var(--amber)"></div></div><div class="prog-val" style="color:var(--amber)">7</div></div>
+      <div class="prog-row"><div class="prog-label">Avg Micro Dwell</div><div class="prog-bar-wrap"><div class="prog-bar" style="width:25%;background:var(--accent)"></div></div><div class="prog-val">2.8s</div></div>
+      <div class="prog-row"><div class="prog-label">Restless Starts</div><div class="prog-bar-wrap"><div class="prog-bar" style="width:100%;background:var(--red)"></div></div><div class="prog-val" style="color:var(--red)">3/3</div></div>
+    </div>
+  </div>
+
+  <!-- WEEKLY + FOCUS DISTRIBUTION -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">7-Day Focus vs Distraction</div>
+      <div class="chart-wrap" style="height:200px">
+        <canvas id="weeklyBar"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Distraction Triggers (by dwell time)</div>
+      <div style="margin-top:4px">
+        <div class="dtl-row">
+          <div class="dtl-label">YouTube Rabbit Hole</div>
+          <div class="dtl-bar-wrap"><div class="dtl-bar" style="width:90%;background:var(--red)"></div></div>
+          <div class="dtl-val">131s</div>
+        </div>
+        <div class="dtl-row">
+          <div class="dtl-label">Anxiety/Wellness Video</div>
+          <div class="dtl-bar-wrap"><div class="dtl-bar" style="width:47%;background:var(--amber)"></div></div>
+          <div class="dtl-val">61s</div>
+        </div>
+        <div class="dtl-row">
+          <div class="dtl-label">Spotify Setup</div>
+          <div class="dtl-bar-wrap"><div class="dtl-bar" style="width:18%;background:var(--purple)"></div></div>
+          <div class="dtl-val">23s</div>
+        </div>
+        <div class="dtl-row">
+          <div class="dtl-label">Switch Case Tutorial</div>
+          <div class="dtl-bar-wrap"><div class="dtl-bar" style="width:15%;background:var(--green)"></div></div>
+          <div class="dtl-val">19s</div>
+        </div>
+        <div class="dtl-row">
+          <div class="dtl-label">VS Code Release Notes</div>
+          <div class="dtl-bar-wrap"><div class="dtl-bar" style="width:8%;background:var(--accent)"></div></div>
+          <div class="dtl-val">10s</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANOMALIES + SCORES -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">⚡ Detected Anomalies & Insights</div>
+      <div class="anomaly-item">
+        <div class="anomaly-icon">🌀</div>
+        <div><div class="anomaly-title">Pre-distraction restlessness on all 3 chunks</div><div class="anomaly-desc">Every session started with RESTLESS micro-pattern before any anchor app was used. You opened the laptop without a clear intent each time.</div></div>
+      </div>
+      <div class="anomaly-item">
+        <div class="anomaly-icon">🔁</div>
+        <div><div class="anomaly-title">YouTube algorithmic pull detected</div><div class="anomaly-desc">You went to YouTube homepage → notification tab → specific video 3 separate times. Classic recommendation rabbit hole signature.</div></div>
+      </div>
+      <div class="anomaly-item">
+        <div class="anomaly-icon">📂</div>
+        <div><div class="anomaly-title">Anchor app opened but never utilized</div><div class="anomaly-desc">VS Code was open for 54s across Chunk B. Keyboard events: 0. You were setting up, not working. Anchor held = 14s effective only.</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Session Quality Scores</div>
+      <div style="display:flex;justify-content:space-around;margin:12px 0">
+        <div class="score-ring-wrap">
+          <div class="score-ring">
+            <svg viewBox="0 0 90 90" width="90" height="90">
+              <circle cx="45" cy="45" r="35" fill="none" stroke="var(--surface3)" stroke-width="8"/>
+              <circle cx="45" cy="45" r="35" fill="none" stroke="var(--red)" stroke-width="8" stroke-dasharray="12 208" stroke-linecap="round"/>
+            </svg>
+            <div class="score-val" style="color:var(--red)">1.2</div>
+          </div>
+          <div class="score-lbl">Focus<br>Score</div>
+        </div>
+        <div class="score-ring-wrap">
+          <div class="score-ring">
+            <svg viewBox="0 0 90 90" width="90" height="90">
+              <circle cx="45" cy="45" r="35" fill="none" stroke="var(--surface3)" stroke-width="8"/>
+              <circle cx="45" cy="45" r="35" fill="none" stroke="var(--amber)" stroke-width="8" stroke-dasharray="47 173" stroke-linecap="round"/>
+            </svg>
+            <div class="score-val" style="color:var(--amber)">2.2</div>
+          </div>
+          <div class="score-lbl">Fragmentation<br>Resistance</div>
+        </div>
+        <div class="score-ring-wrap">
+          <div class="score-ring">
+            <svg viewBox="0 0 90 90" width="90" height="90">
+              <circle cx="45" cy="45" r="35" fill="none" stroke="var(--surface3)" stroke-width="8"/>
+              <circle cx="45" cy="45" r="35" fill="none" stroke="var(--green)" stroke-width="8" stroke-dasharray="88 132" stroke-linecap="round"/>
+            </svg>
+            <div class="score-val" style="color:var(--green)">4.1</div>
+          </div>
+          <div class="score-lbl">Self-Awareness<br>Index</div>
+        </div>
+      </div>
+      <hr>
+      <div class="card-title">Context Switch Heatmap (Today)</div>
+      <div class="chart-wrap" style="height:100px">
+        <canvas id="switchChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PAGE: WORK CHUNKS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page" id="page-chunks">
+  <div style="margin-top:20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <h2 style="font-size:16px;font-weight:600;margin-bottom:3px">Reconstructed Activity Chunks</h2>
+      <p style="font-size:12px;color:var(--text3)">3 cognitive blocks · Gemini 1.5 Flash intent classification · From your real telemetry</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:8px;height:8px;border-radius:50%;background:var(--amber)"></div>RESTLESS_START</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>DISTRACTION</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)"><div style="width:8px;height:8px;border-radius:50%;background:var(--cyan)"></div>DISTRACTION_BREAK</div>
+    </div>
+  </div>
+
+  <!-- CHUNK A -->
+  <div class="card" style="margin-bottom:14px;border-left:3px solid var(--red)">
+    <div class="chunk-header">
+      <div class="chunk-label">A</div>
+      <div class="chunk-title">Browsing wellness and programming YouTube after querying ChatGPT</div>
+      <span class="tag tag-red">DISTRACTION</span>
+      <span style="font-size:11px;color:var(--text3);margin-left:auto">Micro: <strong style="color:var(--amber)">SWITCHING</strong></span>
+    </div>
+    <div class="chunk-meta">18:52:37 → 18:54:07 &nbsp;·&nbsp; 100s duration &nbsp;·&nbsp; Boundary: ANCHOR_OPENED</div>
+    <div class="chunk-summary">User transitioned from brief ChatGPT interaction into watching YouTube videos on programming and mental wellness without typing. Session began restless with 6 rapid app switches before settling on video content.</div>
+    <div class="grid-4" style="margin:10px 0;gap:8px">
+      <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center">
+        <div style="font-size:18px;font-weight:600;color:var(--text)">6</div>
+        <div style="font-size:10px;color:var(--text3)">Rapid Switches</div>
+      </div>
+      <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center">
+        <div style="font-size:18px;font-weight:600;color:var(--text)">3</div>
+        <div style="font-size:10px;color:var(--text3)">Tab Flickers</div>
+      </div>
+      <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center">
+        <div style="font-size:18px;font-weight:600;color:var(--amber)">3000ms</div>
+        <div style="font-size:10px;color:var(--text3)">Avg Micro Dwell</div>
+      </div>
+      <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center">
+        <div style="font-size:18px;font-weight:600;color:var(--red)">NO</div>
+        <div style="font-size:10px;color:var(--text3)">Returned to Anchor</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:500">SUSTAINED FOCUS EVENTS (≥10s)</div>
+    <div class="event-list">
+      <div class="event-row"><div class="event-time">18:52:37</div><div class="event-app">Chrome</div><div class="event-title">ChatGPT</div><span class="tag tag-blue" style="font-size:10px">AI Tool</span><div class="event-dwell">20s</div></div>
+      <div class="event-row"><div class="event-time">18:53:06</div><div class="event-app">Chrome</div><div class="event-title">Switch Case - YouTube</div><span class="tag tag-green" style="font-size:10px">Learning</span><div class="event-dwell">19s</div></div>
+      <div class="event-row"><div class="event-time">18:54:07</div><div class="event-app">Chrome</div><div class="event-title">Anxiety, Stress, Loneliness & Depression Cured - YouTube</div><span class="tag tag-red" style="font-size:10px">Distraction</span><div class="event-dwell">61s</div></div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+      <span style="font-size:11px;color:var(--text3)">Open Loops:</span>
+      <span class="tag tag-gray">ChronoTrace dev in PowerShell</span>
+      <span class="tag tag-gray">ChatGPT exploratory query</span>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:6px;align-items:center">
+      <span style="font-size:11px;color:var(--text3)">Override intent:</span>
+      <button onclick="setIntent(this,'DEEP_WORK')" class="btn btn-ghost" style="font-size:10px;padding:3px 8px">DEEP_WORK</button>
+      <button onclick="setIntent(this,'LEARNING')" class="btn btn-ghost" style="font-size:10px;padding:3px 8px">LEARNING</button>
+      <button onclick="setIntent(this,'DISTRACTION')" class="btn btn-primary" style="font-size:10px;padding:3px 8px">DISTRACTION ✓</button>
+      <button onclick="setIntent(this,'BREAK')" class="btn btn-ghost" style="font-size:10px;padding:3px 8px">BREAK</button>
+    </div>
+  </div>
+
+  <!-- CHUNK B -->
+  <div class="card" style="margin-bottom:14px;border-left:3px solid var(--amber)">
+    <div class="chunk-header">
+      <div class="chunk-label">B</div>
+      <div class="chunk-title">Attempting to initialize development workspace for TypeScript assignment</div>
+      <span class="tag tag-amber">RESTLESS_START</span>
+      <span style="font-size:11px;color:var(--text3);margin-left:auto">Micro: <strong style="color:var(--red)">TAB_HUNTING</strong></span>
+    </div>
+    <div class="chunk-meta">18:54:51 → 18:55:45 &nbsp;·&nbsp; 54s duration &nbsp;·&nbsp; Boundary: IDLE_GAP &nbsp;·&nbsp; Anchor: VS Code</div>
+    <div class="chunk-summary">User opened VS Code to work on TS Assignment but struggled to settle into code — read release notes, navigated folders, then searched Spotify for background music. Zero keystrokes recorded in anchor app. Never reached productive state.</div>
+    <div class="grid-4" style="margin:10px 0;gap:8px">
+      <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center">
+        <div style="font-size:18px;font-weight:600;color:var(--text)">VS Code</div>
+        <div style="font-size:10px;color:var(--text3)">Anchor App</div>
+      </div>
+      <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center">
+        <div style="font-size:18px;font-weight:600;color:var(--red)">0</div>
+        <div style="font-size:10px;color:var(--text3)">Keystrokes in Anchor</div>
+      </div>
+      <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center">
+        <div style="font-size:18px;font-weight:600;color:var(--amber)">14s</div>
+        <div style="font-size:10px;color:var(--text3)">Anchor Held</div>
+      </div>
+      <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center">
+        <div style="font-size:18px;font-weight:600;color:var(--red)">NO</div>
+        <div style="font-size:10px;color:var(--text3)">Returned to Anchor</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:500">SUSTAINED FOCUS EVENTS (≥10s)</div>
+    <div class="event-list">
+      <div class="event-row"><div class="event-time">18:54:51</div><div class="event-app">VS Code</div><div class="event-title">Release Notes 1.140.0 - Full_Stack_Dev_Learning_Monster2.0</div><span class="tag tag-amber" style="font-size:10px">Admin</span><div class="event-dwell">10s</div></div>
+      <div class="event-row"><div class="event-time">18:55:08</div><div class="event-app">VS Code</div><div class="event-title">Open Folder</div><span class="tag tag-gray" style="font-size:10px">Utility</span><div class="event-dwell">17s</div></div>
+      <div class="event-row"><div class="event-time">18:55:45</div><div class="event-app">Chrome</div><div class="event-title">Yeh Jawaani Hai Deewani — Spotify</div><span class="tag tag-purple" style="font-size:10px">Ambient</span><div class="event-dwell">13s</div></div>
+    </div>
+  </div>
+
+  <!-- CHUNK C -->
+  <div class="card" style="margin-bottom:14px;border-left:3px solid var(--cyan)">
+    <div class="chunk-header">
+      <div class="chunk-label">C</div>
+      <div class="chunk-title">Watching motivational self-reflection YouTube video</div>
+      <span class="tag tag-cyan">DISTRACTION_BREAK</span>
+      <span style="font-size:11px;color:var(--text3);margin-left:auto">Micro: <strong style="color:var(--red)">TAB_HUNTING</strong></span>
+    </div>
+    <div class="chunk-meta">18:58:12 → 18:58:12 &nbsp;·&nbsp; 131s duration &nbsp;·&nbsp; Boundary: LOG_END</div>
+    <div class="chunk-summary">Session concluded with 2m 11s of uninterrupted YouTube watching — "I Dream Big But Do Nothing" neuroscience video. Zero keystrokes. No return to work after. Session ended here with PowerShell becoming active, suggesting the work session was abandoned.</div>
+    <div style="background:rgba(30,200,224,.06);border:1px solid rgba(30,200,224,.15);border-radius:6px;padding:10px;margin:10px 0">
+      <div style="font-size:11px;font-weight:500;color:var(--cyan);margin-bottom:4px">🔍 Pre-distraction Signal Detected</div>
+      <div style="font-size:12px;color:var(--text2)">TAB_HUNTING pattern for 40s before this video started — 5 rapid switches between YouTube homepage, notification tab, and New Tab. Classic algorithmic recommendation pull behavior.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PAGE: TELEMETRY -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page" id="page-telemetry">
+  <div style="margin-top:20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <h2 style="font-size:16px;font-weight:600;margin-bottom:3px">Raw Telemetry Stream</h2>
+      <p style="font-size:12px;color:var(--text3)">30 window transitions · Windows pywin32 API · Real capture</p>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-ghost" onclick="filterStream('all')" id="f-all" style="background:var(--accent);color:#fff;border-color:var(--accent)">All (30)</button>
+      <button class="btn btn-ghost" onclick="filterStream('main')" id="f-main">MAIN (≥10s)</button>
+      <button class="btn btn-ghost" onclick="filterStream('micro')" id="f-micro">MICRO (&lt;10s)</button>
+    </div>
+  </div>
+  <div class="search-bar">
+    <input class="search-input" placeholder="Filter by app or window title..." oninput="filterTelemetry(this.value)" id="telSearch">
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table style="width:100%;border-collapse:collapse" id="telTable">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border)">
+          <th style="padding:10px 14px;text-align:left;font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.05em">Timestamp</th>
+          <th style="padding:10px 14px;text-align:left;font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase">Stream</th>
+          <th style="padding:10px 14px;text-align:left;font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase">Application</th>
+          <th style="padding:10px 14px;text-align:left;font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase">Window Title</th>
+          <th style="padding:10px 14px;text-align:left;font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase">Category</th>
+          <th style="padding:10px 14px;text-align:right;font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase">Dwell</th>
+        </tr>
+      </thead>
+      <tbody id="telBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PAGE: RE-ENTRY -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page" id="page-reentry">
+  <div style="margin-top:20px;max-width:700px;margin-left:auto;margin-right:auto">
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:4px">Laptop Wake Re-entry Briefing</h2>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:20px">Automatic context reconstruction · Windows sleep & wake trigger</p>
+
+    <div class="reentry-card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="width:36px;height:36px;border-radius:8px;background:rgba(91,127,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px">⏱</div>
+        <div>
+          <div style="font-size:13px;font-weight:500">Laptop Wake Re-entry Briefing</div>
+          <div style="font-size:11px;color:var(--text3)">Last session: earlier today · Gap: ~2 minutes</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <span class="tag tag-blue">TS Assignment</span>
+          <span class="tag tag-gray">ChronoTrace</span>
+          <span class="tag tag-gray">Full_Stack_Dev_Learning_Monster2.0</span>
+        </div>
+      </div>
+      <div class="reentry-quote">"Last time on VS Code was earlier today. You were attempting to initialize a TypeScript assignment workspace, and left 2 unresolved threads."</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px">User opened VS Code to work on TS Assignment but struggled to settle — read release notes, navigated folders, searched Spotify for music. Session concluded with a YouTube distraction spiral. Zero keystrokes in editor.</div>
+
+      <div style="font-size:11px;font-weight:500;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Unresolved Loops & Open Files (2)</div>
+      <div class="open-loop"><div class="loop-icon"></div><span style="font-size:12px;color:var(--text)">TS Assignment workspace setup</span><span style="font-size:11px;color:var(--text3);margin-left:auto">VS Code · 18:55</span></div>
+      <div class="open-loop"><div class="loop-icon"></div><span style="font-size:12px;color:var(--text)">Full_Stack_Dev_Learning_Monster2.0</span><span style="font-size:11px;color:var(--text3);margin-left:auto">index.html open · 18:54</span></div>
+
+      <div style="margin-top:16px;display:flex;gap:8px">
+        <button class="btn btn-ghost">📋 Copy Context</button>
+        <button class="btn btn-primary">▶ Resume Workspace</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">What happened before this session ended</div>
+      <div class="chart-wrap" style="height:160px">
+        <canvas id="sessionTimeline"></canvas>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text2);line-height:1.7">
+        <strong style="color:var(--amber)">Warning:</strong> This session showed a RESTLESS_START pattern across all 3 chunks. You may want to define a clear task before reopening VS Code to avoid the same fragmentation pattern repeating.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PAGE: PATTERNS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page" id="page-patterns">
+  <div style="margin-top:20px">
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:4px">Behavioral Patterns & Insights</h2>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:20px">Derived from telemetry · Updates after each session</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Weekly Focus Trend</div>
+        <div class="chart-wrap" style="height:200px">
+          <canvas id="focusTrend"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Session Start Behavior Distribution</div>
+        <div class="chart-wrap" style="height:200px">
+          <canvas id="startBehavior"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Interruption Recovery Time (Personal Curve)</div>
+        <div class="chart-wrap" style="height:180px">
+          <canvas id="recoveryChart"></canvas>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:var(--text2)">Your average re-focus time after a YouTube interruption: <strong style="color:var(--red)">~8 minutes</strong>. After a ChatGPT check: <strong style="color:var(--amber)">~2 minutes</strong>.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Detected Behavioral Patterns</div>
+        <div class="pattern-row">
+          <div class="pattern-icon">🌀</div>
+          <div class="pattern-body">
+            <div class="pattern-title">RESTLESS_START (all 3 sessions)</div>
+            <div class="pattern-desc">Every session this week began with rapid app switching before settling. Suggests you're opening laptop without a defined task in mind.</div>
+          </div>
+          <span class="pattern-badge" style="color:var(--red)">HIGH</span>
+        </div>
+        <div class="pattern-row">
+          <div class="pattern-icon">📺</div>
+          <div class="pattern-body">
+            <div class="pattern-title">YouTube Algorithmic Pull</div>
+            <div class="pattern-desc">3 separate YouTube visits within 6 minutes. Homepage → notification → video. Classic recommendation trap pattern.</div>
+          </div>
+          <span class="pattern-badge" style="color:var(--amber)">MED</span>
+        </div>
+        <div class="pattern-row">
+          <div class="pattern-icon">🎵</div>
+          <div class="pattern-body">
+            <div class="pattern-title">Music-First Procrastination</div>
+            <div class="pattern-desc">Spotify setup occurring before any productive work starts. Used as a delay mechanism, not a focus aid.</div>
+          </div>
+          <span class="pattern-badge" style="color:var(--amber)">MED</span>
+        </div>
+        <div class="pattern-row">
+          <div class="pattern-icon">📂</div>
+          <div class="pattern-body">
+            <div class="pattern-title">Zero-Keystroke Anchor Sessions</div>
+            <div class="pattern-desc">VS Code opened but no typing recorded. You're in setup/avoidance mode, not work mode.</div>
+          </div>
+          <span class="pattern-badge" style="color:var(--red)">HIGH</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PAGE: PIPELINE -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page" id="page-pipeline">
+  <div style="margin-top:20px">
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:4px">ChronoTrace 5-Layer Pipeline</h2>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:20px">Click any layer to inspect mechanics</p>
+
+    <div style="display:flex;gap:10px;margin-bottom:20px" id="pipelineNav">
+      <div class="card" onclick="showLayer(1)" id="layer1" style="flex:1;cursor:pointer;border-color:var(--accent);background:rgba(91,127,255,.06);text-align:center;padding:14px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:6px">L01</div>
+        <div style="font-size:13px;font-weight:500">Event Collector</div>
+        <div style="font-size:11px;color:var(--accent)">pywin32 / psutil</div>
+      </div>
+      <div class="card" onclick="showLayer(2)" id="layer2" style="flex:1;cursor:pointer;text-align:center;padding:14px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:6px">L02</div>
+        <div style="font-size:13px;font-weight:500">Stream Splitter</div>
+        <div style="font-size:11px;color:var(--text3)">Dwell Threshold</div>
+      </div>
+      <div class="card" onclick="showLayer(3)" id="layer3" style="flex:1;cursor:pointer;text-align:center;padding:14px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:6px">L03</div>
+        <div style="font-size:13px;font-weight:500">Chunker Engine</div>
+        <div style="font-size:11px;color:var(--text3)">4 Priority Boundaries</div>
+      </div>
+      <div class="card" onclick="showLayer(4)" id="layer4" style="flex:1;cursor:pointer;text-align:center;padding:14px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:6px">L04</div>
+        <div style="font-size:13px;font-weight:500">Aggregator</div>
+        <div style="font-size:11px;color:var(--text3)">150-Token JSON</div>
+      </div>
+      <div class="card" onclick="showLayer(5)" id="layer5" style="flex:1;cursor:pointer;text-align:center;padding:14px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:6px">L05</div>
+        <div style="font-size:13px;font-weight:500">LLM Intent Engine</div>
+        <div style="font-size:11px;color:var(--text3)">Gemini 1.5 Flash</div>
+      </div>
+    </div>
+
+    <div class="card" id="layerDetail">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="font-size:20px">👁</div>
+        <div>
+          <div style="font-size:14px;font-weight:500">Layer 1 — Event Collector</div>
+          <div style="font-size:12px;color:var(--text3)">Captures every foreground window change using Windows pywin32 API</div>
+        </div>
+        <span class="tag tag-gray" style="margin-left:auto">Poll: 500ms</span>
+      </div>
+      <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px">Execution Rules & Invariants:</div>
+      <div style="display:flex;flex-direction:column;gap:6px" id="layerRules">
+        <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:16px;height:16px;border-radius:50%;background:rgba(52,209,122,.2);border:1px solid var(--green);flex-shrink:0;margin-top:1px"></div><div style="font-size:12px;color:var(--text2)">win32gui.GetForegroundWindow() captures active window handle every 500ms</div></div>
+        <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:16px;height:16px;border-radius:50%;background:rgba(52,209,122,.2);border:1px solid var(--green);flex-shrink:0;margin-top:1px"></div><div style="font-size:12px;color:var(--text2)">Dwell calculated as time between window focus changes — not approximated</div></div>
+        <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:16px;height:16px;border-radius:50%;background:rgba(52,209,122,.2);border:1px solid var(--green);flex-shrink:0;margin-top:1px"></div><div style="font-size:12px;color:var(--text2)">Keyboard events counted per window (count only, zero content capture)</div></div>
+        <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:16px;height:16px;border-radius:50%;background:rgba(52,209,122,.2);border:1px solid var(--green);flex-shrink:0;margin-top:1px"></div><div style="font-size:12px;color:var(--text2)">enricher.py maps app → category via title keyword overrides</div></div>
+      </div>
+
+      <div style="margin-top:16px">
+        <div style="font-size:11px;font-weight:500;color:var(--text3);margin-bottom:8px;text-transform:uppercase">Live Event Count (This Session)</div>
+        <div class="chart-wrap" style="height:120px">
+          <canvas id="pipelineFlow"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────
+const telemetryData = [
+  {ts:'18:52:14',dwell:5000,app:'PowerShell',title:'Windows PowerShell',cat:'Utility',stream:'MICRO'},
+  {ts:'18:52:16',dwell:2000,app:'Chrome',title:'ChronoTrace — Passive Activity Reconstruction Agent',cat:'Learning',stream:'MICRO'},
+  {ts:'18:52:17',dwell:1000,app:'Chrome',title:'New Tab',cat:'Utility',stream:'MICRO'},
+  {ts:'18:52:37',dwell:20000,app:'Chrome',title:'ChatGPT',cat:'Learning',stream:'MAIN'},
+  {ts:'18:52:39',dwell:2000,app:'Chrome',title:'New Tab',cat:'Utility',stream:'MICRO'},
+  {ts:'18:52:43',dwell:4000,app:'Chrome',title:'YouTube',cat:'Entertainment',stream:'MICRO'},
+  {ts:'18:52:47',dwell:4000,app:'Chrome',title:'(4) YouTube',cat:'Entertainment',stream:'MICRO'},
+  {ts:'18:53:06',dwell:19000,app:'Chrome',title:'Switch Case - YouTube',cat:'Entertainment',stream:'MAIN'},
+  {ts:'18:54:07',dwell:61000,app:'Chrome',title:'Anxiety, Stress, Loneliness & Depression Cured - YouTube',cat:'Entertainment',stream:'MAIN'},
+  {ts:'18:54:08',dwell:1000,app:'Chrome',title:'ChatGPT',cat:'Learning',stream:'MICRO'},
+  {ts:'18:54:18',dwell:9000,app:'File Explorer',title:'This PC',cat:'Utility',stream:'MICRO'},
+  {ts:'18:54:24',dwell:4000,app:'SearchHost',title:'Search',cat:'Utility',stream:'MICRO'},
+  {ts:'18:54:32',dwell:4000,app:'VS Code',title:'Visual Studio Code',cat:'Deep Work',stream:'MICRO'},
+  {ts:'18:54:41',dwell:9000,app:'VS Code',title:'index.html - Full_Stack_Dev_Learning_Monster2.0',cat:'Deep Work',stream:'MICRO'},
+  {ts:'18:54:51',dwell:10000,app:'VS Code',title:'Release Notes 1.140.0',cat:'Deep Work',stream:'MAIN'},
+  {ts:'18:55:08',dwell:17000,app:'VS Code',title:'Open Folder',cat:'Deep Work',stream:'MAIN'},
+  {ts:'18:55:10',dwell:2000,app:'VS Code',title:'Visual Studio Code',cat:'Deep Work',stream:'MICRO'},
+  {ts:'18:55:15',dwell:5000,app:'VS Code',title:'TS Assignment',cat:'Deep Work',stream:'MICRO'},
+  {ts:'18:55:16',dwell:1000,app:'VS Code',title:'Welcome - TS Assignment',cat:'Deep Work',stream:'MICRO'},
+  {ts:'18:55:18',dwell:2000,app:'Chrome',title:'ChatGPT',cat:'Learning',stream:'MICRO'},
+  {ts:'18:55:22',dwell:4000,app:'Chrome',title:'New Tab',cat:'Utility',stream:'MICRO'},
+  {ts:'18:55:24',dwell:2000,app:'Chrome',title:'spotify web player - Google Search',cat:'Utility',stream:'MICRO'},
+  {ts:'18:55:27',dwell:3000,app:'Chrome',title:'Spotify Web Player',cat:'Utility',stream:'MICRO'},
+  {ts:'18:55:32',dwell:5000,app:'Chrome',title:'Spotify - Music for everyone',cat:'Utility',stream:'MICRO'},
+  {ts:'18:55:45',dwell:13000,app:'Chrome',title:'Yeh Jawaani Hai Deewani - Spotify',cat:'Learning',stream:'MAIN'},
+  {ts:'18:55:46',dwell:1000,app:'Chrome',title:'ChatGPT',cat:'Learning',stream:'MICRO'},
+  {ts:'18:55:47',dwell:1000,app:'Chrome',title:'New Tab',cat:'Utility',stream:'MICRO'},
+  {ts:'18:55:52',dwell:5000,app:'Chrome',title:'YouTube',cat:'Entertainment',stream:'MICRO'},
+  {ts:'18:56:01',dwell:9000,app:'Chrome',title:'(4) YouTube',cat:'Entertainment',stream:'MICRO'},
+  {ts:'18:58:12',dwell:131000,app:'Chrome',title:'I DREAM BIG BUT DO NOTHING - YouTube',cat:'Learning',stream:'MAIN'},
+];
+
+const CAT_COLORS = {
+  'Learning':'#34d17a','Deep Work':'#5b7fff','Entertainment':'#f55c5c',
+  'Utility':'#4a5068','Communication':'#1ec8e0','Ambient':'#9d7df5'
+};
+
+// ─── TIMELINE ───────────────────────────────────────────────────────
+function buildTimeline() {
+  const bar = document.getElementById('mainTimeline');
+  const total = telemetryData.reduce((s,e)=>s+e.dwell_ms||s+e.dwell,0);
+  telemetryData.forEach(e => {
+    const dw = e.dwell_ms||e.dwell;
+    const pct = (dw/total*100).toFixed(2);
+    const div = document.createElement('div');
+    const cls = e.cat==='Deep Work'?'deep':e.cat==='Learning'?'learning':
+                e.cat==='Entertainment'?'distraction':e.cat==='Ambient'?'ambient':'admin';
+    div.className='tl-seg '+cls;
+    div.style.width=pct+'%';
+    div.title=`${e.app}: ${e.title} (${dw/1000}s)`;
+    bar.appendChild(div);
+  });
+}
+
+// ─── HEATMAP ────────────────────────────────────────────────────────
+function buildHeatmap() {
+  const grid = document.getElementById('heatmapGrid');
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const vals = [
+    [0,0,0,0,0,0,0,0,0,0.2,0.8,0.9,0.7,0.3,0.5,0.6,0.9,0.7,0.3,0.1,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0.4,0.6,0.5,0.8,0.9,0.7,0.4,0.6,0.5,0.2,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0.1,0.3,0.5,0.7,0.9,0.8,0.6,0.7,0.5,0.3,0.1,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0.2,0.4,0.3,0.5,0.4,0.3,0.2,0.1,0.2,0.1,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0.1,0.2,0.2,0.1,0.2,0.1,0.3,0.2,0.1,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  ];
+  vals.forEach((dayVals,di) => {
+    dayVals.forEach((v,h) => {
+      const cell = document.createElement('div');
+      cell.className='heat-cell';
+      const alpha = v*0.9+0.05;
+      cell.style.background = v===0?'var(--surface3)':`rgba(37,99,235,${alpha})`;
+      cell.title=`${days[di]} ${h}:00 — Focus: ${Math.round(v*100)}%`;
+      grid.appendChild(cell);
+    });
+  });
+}
+
+// ─── CHARTS ─────────────────────────────────────────────────────────
+const chartDefaults = {
+  color:'#334155',
+  plugins:{legend:{display:false}},
+  scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10}}},
+          y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10}}}}
+};
+
+function mkChart(id,type,data,opts={}) {
+  const ctx = document.getElementById(id);
+  if(!ctx)return;
+  return new Chart(ctx,{type,data,options:{...chartDefaults,...opts,responsive:true,maintainAspectRatio:false}});
+}
+
+function initCharts() {
+  // Donut
+  mkChart('intentDonut','doughnut',{
+    labels:['Distraction','Restless Start','Ambient','Learning','Admin'],
+    datasets:[{data:[61,54,13,20,17],backgroundColor:['#dc2626','#d97706','#7c3aed','#16a34a','#64748b'],borderWidth:0,hoverOffset:4}]
+  },{plugins:{legend:{display:true,position:'bottom',labels:{color:'#475569',font:{size:10},boxWidth:8,padding:10}}},cutout:'65%',scales:{}});
+
+  // Weekly bar
+  mkChart('weeklyBar','bar',{
+    labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    datasets:[
+      {label:'Deep Work',data:[180,240,120,60,27,0,0],backgroundColor:'rgba(37,99,235,.8)',borderRadius:4},
+      {label:'Distraction',data:[45,60,90,120,258,0,0],backgroundColor:'rgba(220,38,38,.8)',borderRadius:4},
+    ]
+  },{plugins:{legend:{display:true,labels:{color:'#475569',font:{size:10},boxWidth:8}}},scales:{x:{stacked:true,grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10}}},y:{stacked:true,grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10}}}}});
+
+  // Switch chart
+  mkChart('switchChart','line',{
+    labels:['18:52','18:53','18:54','18:55','18:56','18:57','18:58'],
+    datasets:[{data:[3,2,4,7,2,0,1],borderColor:'#d97706',backgroundColor:'rgba(217,119,6,.12)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#d97706'}]
+  },{scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:9}}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:9}},min:0}}});
+
+  // Session timeline (re-entry)
+  mkChart('sessionTimeline','bar',{
+    labels:['Chunk A\nDistraction','Chunk B\nRestless','Chunk C\nBreak'],
+    datasets:[
+      {label:'Deep Work',data:[0,14,0],backgroundColor:'rgba(37,99,235,.8)',borderRadius:4},
+      {label:'Distraction',data:[100,0,131],backgroundColor:'rgba(220,38,38,.8)',borderRadius:4},
+      {label:'Setup/Admin',data:[0,40,0],backgroundColor:'rgba(217,119,6,.8)',borderRadius:4},
+    ]
+  },{plugins:{legend:{display:true,labels:{color:'#475569',font:{size:10},boxWidth:8}}},indexAxis:'y',scales:{x:{stacked:true,grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10}}},y:{stacked:true,grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10}}}}});
+
+  // Focus trend
+  mkChart('focusTrend','line',{
+    labels:['Mon','Tue','Wed','Thu','Fri','Today'],
+    datasets:[
+      {label:'Deep Work (min)',data:[180,240,120,60,90,0.5],borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.1)',fill:true,tension:.4},
+      {label:'Distraction (min)',data:[45,60,90,120,80,164],borderColor:'#dc2626',backgroundColor:'rgba(220,38,38,.1)',fill:true,tension:.4},
+    ]
+  },{plugins:{legend:{display:true,labels:{color:'#475569',font:{size:10},boxWidth:8}}}});
+
+  // Start behavior
+  mkChart('startBehavior','doughnut',{
+    labels:['Restless Start','Settled Focus','Gradual Settle'],
+    datasets:[{data:[85,5,10],backgroundColor:['#d97706','#2563eb','#16a34a'],borderWidth:0}]
+  },{plugins:{legend:{display:true,position:'bottom',labels:{color:'#475569',font:{size:10},boxWidth:8,padding:8}}},cutout:'60%',scales:{}});
+
+  // Recovery chart
+  mkChart('recoveryChart','line',{
+    labels:['0','1','2','3','4','5','6','7','8','min'],
+    datasets:[
+      {label:'YouTube interrupt',data:[0,5,15,30,50,65,75,85,95,100],borderColor:'#dc2626',tension:.4,fill:false},
+      {label:'ChatGPT check',data:[0,20,50,80,100,100,100,100,100,100],borderColor:'#d97706',tension:.4,fill:false},
+    ]
+  },{plugins:{legend:{display:true,labels:{color:'#475569',font:{size:10},boxWidth:8}}},scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10},callback:v=>v+'%'},min:0,max:100}}});
+
+  // Pipeline flow
+  mkChart('pipelineFlow','bar',{
+    labels:['Raw Events','After Splitter','Chunks','LLM Summaries'],
+    datasets:[{data:[30,9,3,3],backgroundColor:['rgba(100,116,139,.6)','rgba(217,119,6,.6)','rgba(37,99,235,.8)','rgba(22,163,74,.8)'],borderRadius:4}]
+  },{scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10}}}}});
+}
+
+// ─── TELEMETRY TABLE ────────────────────────────────────────────────
+let currentFilter = 'all';
+let currentSearch = '';
+
+function renderTelemetry() {
+  const tbody = document.getElementById('telBody');
+  tbody.innerHTML = '';
+  telemetryData
+    .filter(e => {
+      if(currentFilter==='main' && e.stream!=='MAIN') return false;
+      if(currentFilter==='micro' && e.stream!=='MICRO') return false;
+      if(currentSearch && !e.app.toLowerCase().includes(currentSearch) && !e.title.toLowerCase().includes(currentSearch)) return false;
+      return true;
+    })
+    .forEach(e => {
+      const color = CAT_COLORS[e.cat]||'#4a5068';
+      const dw = (e.dwell_ms||e.dwell)/1000;
+      tbody.innerHTML += `
+        <tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+          <td style="padding:9px 14px;font-family:monospace;font-size:12px;color:var(--text3)">${e.ts}</td>
+          <td style="padding:9px 14px"><span class="stream-badge ${e.stream==='MAIN'?'stream-main':'stream-micro'}">${e.stream}</span></td>
+          <td style="padding:9px 14px;font-size:12px;font-weight:500;color:var(--text)">${e.app}</td>
+          <td style="padding:9px 14px;font-size:12px;color:var(--text2);max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.title}</td>
+          <td style="padding:9px 14px"><span style="font-size:11px;font-weight:500;color:${color}">${e.cat}</span></td>
+          <td style="padding:9px 14px;text-align:right;font-size:12px;color:${dw>=10?'var(--text)':'var(--text3)'}">${dw}s</td>
+        </tr>`;
+    });
+}
+
+function filterStream(f) {
+  currentFilter = f;
+  ['all','main','micro'].forEach(id => {
+    const el = document.getElementById('f-'+id);
+    el.style.background = id===f?'var(--accent)':'';
+    el.style.color = id===f?'#fff':'';
+    el.style.borderColor = id===f?'var(--accent)':'';
+  });
+  renderTelemetry();
+}
+
+async function filterTelemetry(val) {
+  currentSearch = val.toLowerCase();
+  renderTelemetry();
+  if (val.length > 2) {
+    try {
+      const searchRes = await fetch(`/search?q=${encodeURIComponent(val)}`);
+      if (searchRes.ok) {
+        const matches = await searchRes.json();
+        console.log('Server search results:', matches);
+      }
+    } catch(e) { console.warn('search fallback to client filter'); }
+  }
+}
+
+// ─── PIPELINE LAYERS ────────────────────────────────────────────────
+const layerData = {
+  1:{icon:'👁',title:'Layer 1 — Event Collector',desc:'Captures every foreground window change using Windows pywin32 API',badge:'Poll: 500ms',rules:['win32gui.GetForegroundWindow() captures active window handle every 500ms','Dwell calculated as time between window focus changes — not approximated','Keyboard events counted per window (count only, zero content capture)','enricher.py maps app → category via title keyword overrides']},
+  2:{icon:'🔀',title:'Layer 2 — Stream Splitter',desc:'Routes ≥10s to MAIN focus stream; aggregates <10s into micro-behavior counters',badge:'Threshold: 10,000ms',rules:['Dwell < 10s: appends to MicroCounters (rapid_switches, tab_flickers, total_dwell_ms)','Pattern eval: RESTLESS (switches ≥ 5 & avg dwell < 3s), TAB_HUNTING (flickers ≥ 3), SWITCHING (switches ≥ 3)','Dwell ≥ 10s: attaches micro snapshot to chunker.add_event() and resets micro counters','Prevents short tab flickers from polluting sustained focus logs while capturing restlessness']},
+  3:{icon:'⚙️',title:'Layer 3 — Chunker Engine',desc:'Groups MAIN events into natural work chunks using boundary detection',badge:'4 Boundaries',rules:['B1 IDLE_GAP: gap > 120s between events closes current chunk','B2 ANCHOR_OPENED: VS Code/Figma opening when chunk has no anchor = hard boundary','B3 CATEGORY_SHIFT: dominant category changes AND gap > 30s','B4 MAX_DURATION: 20-minute hard cap regardless of continuity']},
+  4:{icon:'📄',title:'Layer 4 — Aggregator',desc:'Converts closed chunk to structured 150-token JSON summary — pure Python, no ML',badge:'~150 tokens/chunk',rules:['Builds all fields: anchor_app, returned_to_anchor, keyboard stats, micro_behavior block','dominant_category weighted by dwell time, not event count (prevents brief visits skewing)','session_start_restless = True if first micro_block pattern is RESTLESS','copy_paste_events tracked as strongest work-support signal available']},
+  5:{icon:'🤖',title:'Layer 5 — LLM Intent Engine',desc:'Gemini 1.5 Flash receives structured summary JSON and outputs classified intent',badge:'Gemini 1.5 Flash',rules:['Receives ~150 token chunk summary, never raw events or screen content','Outputs: intent label, confidence, primary_task, distraction_type, work_state, summary, unresolved_threads','Async fire-and-forget — does not block the collector or UI','End-of-day second pass sees all chunks together for daily narrative and unfinished work detection']},
+};
+
+function showLayer(n) {
+  for(let i=1;i<=5;i++){
+    document.getElementById('layer'+i).style.borderColor = i===n?'var(--accent)':'var(--border)';
+    document.getElementById('layer'+i).style.background = i===n?'rgba(91,127,255,.06)':'var(--surface)';
+  }
+  const d = layerData[n];
+  document.getElementById('layerDetail').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div style="font-size:20px">${d.icon}</div>
+      <div><div style="font-size:14px;font-weight:500">${d.title}</div><div style="font-size:12px;color:var(--text3)">${d.desc}</div></div>
+      <span class="tag tag-gray" style="margin-left:auto">${d.badge}</span>
+    </div>
+    <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px">Execution Rules & Invariants:</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      ${d.rules.map(r=>`<div style="display:flex;gap:8px;align-items:flex-start"><div style="width:16px;height:16px;border-radius:50%;background:rgba(52,209,122,.2);border:1px solid var(--green);flex-shrink:0;margin-top:1px"></div><div style="font-size:12px;color:var(--text2)">${r}</div></div>`).join('')}
+    </div>
+    <div style="margin-top:16px"><div style="font-size:11px;font-weight:500;color:var(--text3);margin-bottom:8px;text-transform:uppercase">Data Volume Through Pipeline</div>
+    <div class="chart-wrap" style="height:120px"><canvas id="pipelineFlow"></canvas></div></div>`;
+  // re-render pipeline chart
+  setTimeout(()=>{
+    mkChart('pipelineFlow','bar',{
+      labels:['Raw Events','MAIN Stream','Chunks','LLM Outputs'],
+      datasets:[{data:[30,9,3,3],backgroundColor:['rgba(100,116,139,.6)','rgba(217,119,6,.6)','rgba(37,99,235,.8)','rgba(22,163,74,.8)'],borderRadius:4}]
+    },{scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#64748b',font:{size:10}}}}});
+  },50);
+}
+
+// ─── INTENT OVERRIDE ────────────────────────────────────────────────
+async function setIntent(btn, intent, chunkId = 'unknown') {
+  btn.closest('.card').querySelectorAll('button').forEach(b => {
+    b.classList.remove('btn-primary');
+    b.classList.add('btn-ghost');
+    b.style.background=''; b.style.color=''; b.style.borderColor='';
+  });
+  btn.classList.remove('btn-ghost');
+  btn.classList.add('btn-primary');
+  try {
+    await fetch(`/sessions/${chunkId}/correct`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ intent })
+    });
+  } catch(e) { console.warn('intent correction fallback'); }
+}
+
+// ─── PAGE NAV ────────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  buildTimeline();
+  buildHeatmap();
+  initCharts();
+  renderTelemetry();
+
+  try {
+    const rawRes = await fetch('/api/telemetry/raw');
+    if (rawRes.ok) {
+      const rawEvents = await rawRes.json();
+      if (rawEvents && rawEvents.length > 0) {
+        telemetryData.length = 0;
+        telemetryData.push(...rawEvents.map(e => ({
+          ts: e.timestamp,
+          dwell: e.dwell_ms,
+          app: e.app_name,
+          title: e.window_title,
+          cat: e.category,
+          stream: (e.dwell_ms >= 10000) ? 'MAIN' : 'MICRO'
+        })));
+        buildTimeline();
+        renderTelemetry();
+      }
+    }
+  } catch(e) { console.warn('raw telemetry fallback to static'); }
+
+  try {
+    const sumRes = await fetch('/summary/today');
+    if (sumRes.ok) {
+      const sum = await sumRes.json();
+      const dwSecTotal = sum.total_deep_work_s || 0;
+      const dwMin = Math.floor(dwSecTotal / 60);
+      const dwSec = dwSecTotal % 60;
+      const dwText = dwMin > 0 ? `${dwMin}m ${dwSec}s` : `${dwSec}s`;
+
+      const disSecTotal = sum.total_distraction_s || 0;
+      const disMin = Math.floor(disSecTotal / 60);
+      const disSec = disSecTotal % 60;
+      const disText = disMin > 0 ? `${disMin}m ${disSec}s` : `${disSec}s`;
+
+      const statVals = document.querySelectorAll('#page-dashboard .stat-val');
+      const statSubs = document.querySelectorAll('#page-dashboard .stat-sub');
+      if (statVals[0]) statVals[0].textContent = dwText;
+      if (statVals[1]) statVals[1].textContent = disText;
+      if (statVals[2]) statVals[2].textContent = sum.context_switches !== undefined ? sum.context_switches : 29;
+
+      if (statVals[3]) {
+        const isDistracted = disSecTotal > dwSecTotal;
+        const workState = sum.work_state || (isDistracted ? 'UNSETTLED' : (dwSecTotal > disSecTotal * 2 ? 'PRODUCTIVE' : 'TRANSITIONING'));
+        statVals[3].textContent = workState;
+        if (workState === 'PRODUCTIVE') {
+          statVals[3].style.color = 'var(--green)';
+          if (statSubs[3]) {
+            statSubs[3].className = 'stat-sub stat-up';
+            statSubs[3].textContent = '↑ Sustained deep engineering focus';
+          }
+        } else if (workState === 'UNSETTLED' || workState === 'DISTRACTED') {
+          statVals[3].style.color = 'var(--amber)';
+          if (statSubs[3]) {
+            statSubs[3].className = 'stat-sub stat-down';
+            statSubs[3].textContent = `↓ Distraction (${disText}) > Deep Work (${dwText}) · High fragmentation`;
+          }
+        } else {
+          statVals[3].style.color = 'var(--accent)';
+          if (statSubs[3]) {
+            statSubs[3].className = 'stat-sub stat-neu';
+            statSubs[3].textContent = '— Mixed focus across windows';
+          }
+        }
+      }
+    }
+  } catch(e) { console.warn('summary fallback to static data'); }
+
+  try {
+    const patRes = await fetch('/patterns/week');
+    if (patRes.ok) {
+      const patterns = await patRes.json();
+      console.log('Weekly patterns loaded:', patterns);
+    }
+  } catch(e) { console.warn('patterns fallback to static data'); }
+
+  try {
+    const reRes = await fetch('/reentry/TS%20Assignment');
+    if (reRes.ok) {
+      const re = await reRes.json();
+      const quoteEl = document.querySelector('.reentry-quote');
+      if (quoteEl && re.summary) quoteEl.textContent = `"${re.summary}"`;
+    }
+  } catch(e) { console.warn('reentry fallback to static data'); }
+});
+</script>
+</body>
+</html>

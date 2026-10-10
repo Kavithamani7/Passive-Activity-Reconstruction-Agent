@@ -1,0 +1,207 @@
+[
+  {
+    "chunk_id": "20261009_033940_001",
+    "duration_s": 39.0,
+    "start_time": "03:39:40",
+    "end_time": "03:39:40",
+    "closed_by": "CATEGORY_SHIFT",
+    "main_events": [
+      {
+        "app": "Chrome",
+        "title": "ChatGPT",
+        "dwell_s": 20.0,
+        "keys": 0
+      },
+      {
+        "app": "Chrome",
+        "title": "Switch Case - YouTube",
+        "dwell_s": 19.0,
+        "keys": 0
+      }
+    ],
+    "anchor_app": null,
+    "anchor_held_s": 0.0,
+    "returned_to_anchor": false,
+    "keyboard": {
+      "total_keys": 0,
+      "rate_per_min": 0.0
+    },
+    "micro_behavior": {
+      "total_rapid_switches": 6,
+      "tab_flickers": 3,
+      "avg_micro_dwell_ms": 3000.0,
+      "dominant_pattern": "SWITCHING",
+      "unique_micro_apps": [
+        "Chrome",
+        "PowerShell"
+      ]
+    },
+    "categories_present": [
+      "AI Tool",
+      "Learning"
+    ],
+    "dominant_category": "AI Tool",
+    "copy_paste_events": 0,
+    "session_start_restless": false,
+    "intent": "LEARNING",
+    "confidence": 0.92,
+    "primary_task": "Studying programming switch-case syntax & ChatGPT consultation",
+    "distraction_detected": false,
+    "distraction_type": null,
+    "work_state": "settled",
+    "unresolved_threads": [],
+    "summary": "User engaged in studying programming switch-case syntax & chatgpt consultation across workspace (39s duration)."
+  },
+  {
+    "chunk_id": "20261009_033940_002",
+    "duration_s": 61.0,
+    "start_time": "03:39:40",
+    "end_time": "03:39:40",
+    "closed_by": "ANCHOR_OPENED",
+    "main_events": [
+      {
+        "app": "Chrome",
+        "title": "Anxiety, Stress, Loneliness & Depression Cured - YouTube",
+        "dwell_s": 61.0,
+        "keys": 0
+      }
+    ],
+    "anchor_app": null,
+    "anchor_held_s": 0.0,
+    "returned_to_anchor": false,
+    "keyboard": {
+      "total_keys": 0,
+      "rate_per_min": 0.0
+    },
+    "micro_behavior": {
+      "total_rapid_switches": 0,
+      "tab_flickers": 0,
+      "avg_micro_dwell_ms": 0.0,
+      "dominant_pattern": "NORMAL",
+      "unique_micro_apps": []
+    },
+    "categories_present": [
+      "Wellness"
+    ],
+    "dominant_category": "Wellness",
+    "copy_paste_events": 0,
+    "session_start_restless": false,
+    "intent": "DISTRACTION_BREAK",
+    "confidence": 0.92,
+    "primary_task": "Mental health & anxiety relief video",
+    "distraction_detected": true,
+    "distraction_type": "break",
+    "work_state": "unsettled",
+    "unresolved_threads": [],
+    "summary": "User engaged in mental health & anxiety relief video across workspace (61s duration)."
+  },
+  {
+    "chunk_id": "20261009_033940_003",
+    "duration_s": 40.0,
+    "start_time": "03:39:40",
+    "end_time": "03:39:40",
+    "closed_by": "CATEGORY_SHIFT",
+    "main_events": [
+      {
+        "app": "VS Code",
+        "title": "Release Notes 1.140.0",
+        "dwell_s": 10.0,
+        "keys": 0
+      },
+      {
+        "app": "VS Code",
+        "title": "Open Folder",
+        "dwell_s": 17.0,
+        "keys": 0
+      },
+      {
+        "app": "Chrome",
+        "title": "Yeh Jawaani Hai Deewani - Spotify",
+        "dwell_s": 13.0,
+        "keys": 0
+      }
+    ],
+    "anchor_app": "VS Code",
+    "anchor_held_s": 27.0,
+    "returned_to_anchor": false,
+    "keyboard": {
+      "total_keys": 0,
+      "rate_per_min": 0.0
+    },
+    "micro_behavior": {
+      "total_rapid_switches": 13,
+      "tab_flickers": 7,
+      "avg_micro_dwell_ms": 3923.1,
+      "dominant_pattern": "SWITCHING",
+      "unique_micro_apps": [
+        "Chrome",
+        "File Explorer",
+        "SearchHost",
+        "VS Code"
+      ]
+    },
+    "categories_present": [
+      "Admin",
+      "Ambient"
+    ],
+    "dominant_category": "Admin",
+    "copy_paste_events": 0,
+    "session_start_restless": false,
+    "intent": "RESTLESS_START",
+    "confidence": 0.92,
+    "primary_task": "Restless workspace setup in VS Code (Release Notes, Open Folder) & Spotify playback",
+    "distraction_detected": false,
+    "distraction_type": null,
+    "work_state": "unsettled",
+    "unresolved_threads": [
+      "TS Assignment generic constraints",
+      "index.html in Full_Stack_Dev_Learning_Monster2.0"
+    ],
+    "summary": "User engaged in restless workspace setup in vs code (release notes, open folder) & spotify playback across workspace (40s duration)."
+  },
+  {
+    "chunk_id": "20261009_033940_004",
+    "duration_s": 131.0,
+    "start_time": "03:39:40",
+    "end_time": "03:39:40",
+    "closed_by": "LOG_END",
+    "main_events": [
+      {
+        "app": "Chrome",
+        "title": "I DREAM BIG BUT DO NOTHING - YouTube",
+        "dwell_s": 131.0,
+        "keys": 0
+      }
+    ],
+    "anchor_app": null,
+    "anchor_held_s": 0.0,
+    "returned_to_anchor": false,
+    "keyboard": {
+      "total_keys": 0,
+      "rate_per_min": 0.0
+    },
+    "micro_behavior": {
+      "total_rapid_switches": 4,
+      "tab_flickers": 3,
+      "avg_micro_dwell_ms": 4000.0,
+      "dominant_pattern": "TAB_HUNTING",
+      "unique_micro_apps": [
+        "Chrome"
+      ]
+    },
+    "categories_present": [
+      "Distraction"
+    ],
+    "dominant_category": "Distraction",
+    "copy_paste_events": 0,
+    "session_start_restless": false,
+    "intent": "DISTRACTION",
+    "confidence": 0.92,
+    "primary_task": "Procrastination & neuroscience rabbit hole ('I DREAM BIG BUT DO NOTHING')",
+    "distraction_detected": true,
+    "distraction_type": "procrastination",
+    "work_state": "unsettled",
+    "unresolved_threads": [],
+    "summary": "User engaged in procrastination & neuroscience rabbit hole ('i dream big but do nothing') across workspace (131s duration)."
+  }
+]

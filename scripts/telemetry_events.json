@@ -1,0 +1,242 @@
+[
+  {
+    "timestamp": "18:52:14",
+    "dwell_ms": 5000,
+    "category": "Deep Work",
+    "app_name": "PowerShell",
+    "window_title": "Windows PowerShell",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:52:16",
+    "dwell_ms": 2000,
+    "category": "Learning",
+    "app_name": "Chrome",
+    "window_title": "ChronoTrace \u2014 Passive Activity Reconstruction Agent",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:52:17",
+    "dwell_ms": 1000,
+    "category": "Utility",
+    "app_name": "Chrome",
+    "window_title": "New Tab",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:52:37",
+    "dwell_ms": 20000,
+    "category": "AI Tool",
+    "app_name": "Chrome",
+    "window_title": "ChatGPT",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:52:39",
+    "dwell_ms": 2000,
+    "category": "Utility",
+    "app_name": "Chrome",
+    "window_title": "New Tab",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:52:43",
+    "dwell_ms": 4000,
+    "category": "Distraction",
+    "app_name": "Chrome",
+    "window_title": "YouTube",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:52:47",
+    "dwell_ms": 4000,
+    "category": "Distraction",
+    "app_name": "Chrome",
+    "window_title": "(4) YouTube",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:53:06",
+    "dwell_ms": 19000,
+    "category": "Learning",
+    "app_name": "Chrome",
+    "window_title": "Switch Case - YouTube",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:54:07",
+    "dwell_ms": 61000,
+    "category": "Wellness",
+    "app_name": "Chrome",
+    "window_title": "Anxiety, Stress, Loneliness & Depression Cured - YouTube",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:54:08",
+    "dwell_ms": 1000,
+    "category": "AI Tool",
+    "app_name": "Chrome",
+    "window_title": "ChatGPT",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:54:18",
+    "dwell_ms": 9000,
+    "category": "Utility",
+    "app_name": "File Explorer",
+    "window_title": "This PC",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:54:24",
+    "dwell_ms": 4000,
+    "category": "Utility",
+    "app_name": "SearchHost",
+    "window_title": "Search",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:54:32",
+    "dwell_ms": 4000,
+    "category": "Admin",
+    "app_name": "VS Code",
+    "window_title": "Visual Studio Code",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:54:41",
+    "dwell_ms": 9000,
+    "category": "Deep Work",
+    "app_name": "VS Code",
+    "window_title": "index.html - Full_Stack_Dev_Learning_Monster2.0",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:54:51",
+    "dwell_ms": 10000,
+    "category": "Admin",
+    "app_name": "VS Code",
+    "window_title": "Release Notes 1.140.0",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:08",
+    "dwell_ms": 17000,
+    "category": "Admin",
+    "app_name": "VS Code",
+    "window_title": "Open Folder",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:10",
+    "dwell_ms": 2000,
+    "category": "Admin",
+    "app_name": "VS Code",
+    "window_title": "Visual Studio Code",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:15",
+    "dwell_ms": 5000,
+    "category": "Deep Work",
+    "app_name": "VS Code",
+    "window_title": "TS Assignment",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:16",
+    "dwell_ms": 1000,
+    "category": "Admin",
+    "app_name": "VS Code",
+    "window_title": "Welcome - TS Assignment",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:18",
+    "dwell_ms": 2000,
+    "category": "AI Tool",
+    "app_name": "Chrome",
+    "window_title": "ChatGPT",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:22",
+    "dwell_ms": 4000,
+    "category": "Utility",
+    "app_name": "Chrome",
+    "window_title": "New Tab",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:24",
+    "dwell_ms": 2000,
+    "category": "Utility",
+    "app_name": "Chrome",
+    "window_title": "spotify web player - Google Search",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:27",
+    "dwell_ms": 3000,
+    "category": "Ambient",
+    "app_name": "Chrome",
+    "window_title": "Spotify Web Player",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:32",
+    "dwell_ms": 5000,
+    "category": "Ambient",
+    "app_name": "Chrome",
+    "window_title": "Spotify - Music for everyone",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:45",
+    "dwell_ms": 13000,
+    "category": "Ambient",
+    "app_name": "Chrome",
+    "window_title": "Yeh Jawaani Hai Deewani - Spotify",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:46",
+    "dwell_ms": 1000,
+    "category": "AI Tool",
+    "app_name": "Chrome",
+    "window_title": "ChatGPT",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:47",
+    "dwell_ms": 1000,
+    "category": "Utility",
+    "app_name": "Chrome",
+    "window_title": "New Tab",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:55:52",
+    "dwell_ms": 5000,
+    "category": "Distraction",
+    "app_name": "Chrome",
+    "window_title": "YouTube",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:56:01",
+    "dwell_ms": 9000,
+    "category": "Distraction",
+    "app_name": "Chrome",
+    "window_title": "(4) YouTube",
+    "keyboard_events": 0
+  },
+  {
+    "timestamp": "18:58:12",
+    "dwell_ms": 131000,
+    "category": "Distraction",
+    "app_name": "Chrome",
+    "window_title": "I DREAM BIG BUT DO NOTHING - YouTube",
+    "keyboard_events": 0
+  }
+]

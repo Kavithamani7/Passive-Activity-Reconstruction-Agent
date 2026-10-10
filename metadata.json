@@ -1,0 +1,7 @@
+{
+  "name": "ChronoTrace",
+  "description": "Passive activity reconstruction agent with micro-event pattern detection, intent classification, and re-entry briefings.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
